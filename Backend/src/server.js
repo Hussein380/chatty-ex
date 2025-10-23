@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.route.js";
 import messagesRoutes from "./routes/messages.route.js";
 import { connectDB } from "../lib/db.js";
+import { ENV } from "./lib/env.js"
 
 
 dotenv.config();
-const PORT = process.env.get || 3000;
+const PORT = ENV.PORT || 3000;
 
 
 

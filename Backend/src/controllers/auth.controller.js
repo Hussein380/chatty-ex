@@ -2,7 +2,10 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import "dotenv/config";
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 
+import { ENV } from "../lib/env.js";
 
 
 export const signup = async (req, res) => {
