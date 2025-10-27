@@ -11,11 +11,18 @@ import { Toaster } from "react-hot-toast";
 function App() {
   const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
 
+  console.log("App render - isCheckingAuth:", isCheckingAuth, "authUser:", authUser);
+
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []); // Remove checkAuth dependency to prevent infinite loops
 
-  if (isCheckingAuth) return <PageLoader />;
+  if (isCheckingAuth) {
+    console.log("Showing PageLoader");
+    return <PageLoader />;
+  }
+
+  console.log("Showing Routes - authUser:", authUser);
 
   return (
     <div className="min-h-screen bg-slate-900 relative flex items-center justify-center p-4 overflow-hidden">

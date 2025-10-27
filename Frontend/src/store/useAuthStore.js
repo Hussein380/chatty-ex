@@ -14,22 +14,31 @@ export const useAuthStore = create((set, get) => ({
   onlineUsers: [],
 
   checkAuth: async () => {
+    console.log("Starting auth check...");
     try {
       const res = await axiosInstance.get("/auth/check");
+      console.log("Auth check successful:", res.data);
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in authCheck:", error);
+      // Only log non-401 errors (401 is expected for unauthenticated users)
+      if (error.response?.status !== 401) {
+        console.log("Error in authCheck:", error);
+      } else {
+        console.log("No auth token found, user not logged in");
+      }
       set({ authUser: null });
     } finally {
+      console.log("Auth check completed, setting isCheckingAuth to false");
       set({ isCheckingAuth: false });
+      console.log("State updated - isCheckingAuth should now be false");
     }
   },
 
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post("/auth/signup", data);
+      const res = await axiosInstance.post("/auth/Signup", data);
       set({ authUser: res.data });
 
       toast.success("Account created successfully!");
@@ -44,7 +53,7 @@ export const useAuthStore = create((set, get) => ({
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
-      const res = await axiosInstance.post("/auth/login", data);
+      const res = await axiosInstance.post("/auth/Login", data);
       set({ authUser: res.data });
 
       toast.success("Logged in successfully");
@@ -59,7 +68,7 @@ export const useAuthStore = create((set, get) => ({
 
   logout: async () => {
     try {
-      await axiosInstance.post("/auth/logout");
+      await axiosInstance.post("/auth/Logout");
       set({ authUser: null });
       toast.success("Logged out successfully");
       get().disconnectSocket();

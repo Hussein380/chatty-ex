@@ -11,7 +11,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-  isSoundEnabled: JSON.parse(localStorage.getItem("isSoundEnabled")) === true,
+  isSoundEnabled: JSON.parse(localStorage.getItem("isSoundEnabled") || "false") === true,
 
   toggleSound: () => {
     localStorage.setItem("isSoundEnabled", !get().isSoundEnabled);
@@ -76,10 +76,15 @@ export const useChatStore = create((set, get) => ({
 
     try {
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-      set({ messages: messages.concat(res.data) });
+      // Replace optimistic message with real message from server
+      const updatedMessages = messages.map(msg => 
+        msg._id === tempId ? res.data : msg
+      );
+      set({ messages: updatedMessages });
     } catch (error) {
       // remove optimistic message on failure
-      set({ messages: messages });
+      const filteredMessages = messages.filter(msg => msg._id !== tempId);
+      set({ messages: filteredMessages });
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   },
